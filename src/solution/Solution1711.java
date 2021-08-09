@@ -1,8 +1,6 @@
 package solution;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author: hzhq1255
@@ -44,6 +42,8 @@ public class Solution1711 {
 
 
     public int maxNum = 2 << 20;
+    public int maxTwoSum = 0;
+    public int minTwoSum = 0;
     public long count = 0;
     public Map<Integer, Integer> numMap = new HashMap<>();
 
@@ -77,7 +77,52 @@ public class Solution1711 {
             }
             maxNum =  maxNum >> 1;
         }
-        return (int) ( count / 2 % ( (int) Math.pow(10,9) + 7));
+        return (int) ( count  % ( (int) Math.pow(10,9) + 7));
+    }
+
+
+    /**
+     * 优化过的 hash 方法
+     * @param deliciousness
+     * @return
+     */
+    public int countPairs1(int[] deliciousness) {
+        Arrays.stream(deliciousness).forEach(value -> {
+            if (maxTwoSum <= value * 2){
+                maxTwoSum = value * 2;
+            }
+            if ( minTwoSum >= value * 2){
+                minTwoSum = value * 2;
+            }
+            numMap.put(value,numMap.getOrDefault(value,0) + 1);
+        });
+        //System.out.println(numMap);
+        while (maxNum >= minTwoSum && maxNum != 0){
+            if ( maxNum > maxTwoSum){
+                maxNum = maxNum >> 1;
+                continue;
+            }
+            //System.out.println(maxNum + " " + maxTwoSum + " " + minTwoSum);
+            for (Integer num: numMap.keySet()){
+                if ( num >= 0 && num <= maxNum >> 1){
+                    long currentCount = 0;
+                    Integer anotherNum = maxNum - num;
+                    if (anotherNum.equals(num)){
+                        if (numMap.get(num) > 1){
+                            currentCount = ((long) numMap.get(num) * (numMap.get(num) - 1)) / 2;
+                            count += currentCount;
+                        }
+                    }else {
+                        if (numMap.containsKey(anotherNum)){
+                            currentCount = (long) numMap.get(anotherNum) * numMap.get(num);
+                            count += currentCount;
+                        }
+                    }
+                }
+            }
+            maxNum =  maxNum >> 1;
+        }
+        return (int) ( count  % ( (int) Math.pow(10,9) + 7));
     }
 
 
@@ -89,9 +134,9 @@ public class Solution1711 {
     public static void main(String[] args) {
         int[] test1 = {1,3,5,7,9};
         int[] test2 = {1,1,1,3,3,3,7};
-        int[] test3 = {32,32,32,32,32,32,32};
+        int[] test3 = {2,3,1,4};
         Solution1711 solution = new Solution1711();
-        int count = solution.countPairs(test3);
+        int count = solution.countPairs(test2);
         System.out.println(count);
     }
 
