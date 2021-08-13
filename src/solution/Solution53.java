@@ -38,4 +38,7 @@ package solution;
  * -105 <= nums[i] <= 105
  */
 public class Solution53 {
+    public static void main(String[] args) {
+
+    }
 }
